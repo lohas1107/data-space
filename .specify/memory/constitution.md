@@ -1,50 +1,73 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+- Version change: 未制定（初始範本） → 1.0.0
+- Modified principles:
+  - 原則一佔位 → I. PoC 驗證優先
+  - 原則二佔位 → II. 向後相容依明確需求處理
+  - 原則三佔位 → III. 官方開源套件優先
+- Added sections: 專案範圍與技術取捨、開發與審查流程、具體治理規則。
+- Removed sections: 無既有專案規範移除；未使用的原則四、五範本欄位已省略。
+- Follow-up TODOs: 無。
+-->
+
+# data-space Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. PoC 驗證優先
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+本專案為概念驗證（PoC）。規格、設計與實作 MUST 以驗證當前需求與可行性為優先，
+並採用足以完成驗證的簡單方案。新增抽象層、基礎設施或正式營運規格時，
+MUST 說明其與當前驗證目標或使用者明確需求的關聯。
+此原則用於縮短驗證迭代，避免尚未成立的未來需求增加實作成本。
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. 向後相容依明確需求處理
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+除非使用者特別要求，向後相容 MUST NOT 被視為預設的優先目標或必要驗收條件。
+當保留舊有 API、資料格式、設定或行為會增加複雜度或延誤 PoC 驗證時，
+可採用破壞性變更，無須預設提供相容層、雙版本支援或棄用期。
+變更說明 MUST 記錄受影響的使用方式，以及需要的更新或重建步驟（如有）。
+使用者明確要求相容性時，MUST 在該功能規格中記錄適用範圍，並將其納入驗證。
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### III. 官方開源套件優先
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+新增依賴或選擇實作方案時，MUST 優先評估相關技術的原專案或官方組織維護、
+且以開源授權發布的套件。官方文件僅推薦的第三方套件，不視為官方維護套件。
+若官方開源套件能滿足當前 PoC 需求，MUST 優先採用其既有能力，避免重複實作。
+若不存在適用套件，或其功能、授權、整合成本不適合當前需求，
+可採用其他開源套件或自行實作，並 MUST 在技術決策中簡述原因。
+此原則用於減少自製維護成本，並讓整合方式與上游專案保持一致。
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## 專案範圍與技術取捨
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+- PoC 定位本身不構成正式營運所需的相容性、可用性或擴充性承諾；
+  明確提出的功能與品質需求仍 MUST 滿足。
+- 技術選型 MUST 以當前驗證需求為依據；本憲章不預先指定語言、框架或部署平台。
+- 套件選型說明 MUST 記錄採用的套件、維護來源與開源授權；
+  偏離官方開源套件優先原則時，附上取捨理由即可，無須另設核准程序。
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## 開發與審查流程
+
+- 規格 MUST 說明本次 PoC 要驗證的結果；使用者另有相容性要求時，明列其範圍。
+- 設計與任務審查 MUST 確認新增複雜度服務於當前需求，並檢查套件選型是否符合原則。
+- 完成變更時，MUST 提供與驗證目標相稱的檢查結果，例如可重現的手動操作或相關測試，
+  並記錄已知限制與受影響的使用方式。
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+本憲章作為專案規格、計畫、任務與實作審查的共同依據。
+使用者針對特定功能明確提出的需求 MUST 優先適用，並記錄於該功能文件；
+其中向後相容性要求屬於原則 II 已允許的例外，無須為單一功能修改憲章。
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+修訂全專案原則時，MUST 更新本文件、說明修訂理由與影響，
+同步更新頂端 Sync Impact Report、版本及最後修訂日期。
+原始通過日期維持不變；既有且仍適用的專案決策 MUST 保留。
+
+憲章版本採語意化版本：不相容的治理變更、原則移除或重新定義升 MAJOR；
+新增原則、章節或實質擴充指引升 MINOR；僅文字澄清與非語意修正升 PATCH。
+此版本規則用於治理文件，不代表 PoC 的應用程式必須承諾向後相容。
+
+每次規格、計畫與變更審查 MUST 檢查本憲章的適用條款。
+不符合條款時，MUST 調整方案、記錄條款允許的取捨，或依使用者新指示修訂憲章。
+
+**Version**: 1.0.0 | **Ratified**: 2026-09-10 | **Last Amended**: 2026-09-10
