@@ -1,56 +1,86 @@
 # data-space
 
-## Dataspace 規格索引
+本頁以元件架構圖說明 Dataspace 的功能分工與互動流程，並追蹤本專案各流程的實作進度。
 
-### 簡介
+元件依功能分成參與者服務、共用／聯邦服務、營運支援服務。圖中組織 A 提供資料，組織 B 使用資料。
 
-本索引用於查找與比較 Dataspace 相關規格，整理各項文件的用途、維護組織、官方閱讀入口與發布狀態。協定定義系統之間的互動流程；基礎標準提供共用的資料與身分模型；參考架構、治理規範及建置指引則協助設計與營運資料空間。
+[![Dataspace 元件架構與流程：共用／聯邦服務、組織 A（Provider）、組織 B（Consumer）及營運支援服務；藍色為 Pull 資料、紫色為 Push 資料，實際資料皆由 A 流向 B。](docs/images/dataspace-architecture.png)](docs/images/dataspace-architecture.png)
 
-Dataspace 的相關文件由多個組織分工維護：Eclipse Foundation 負責互通協定與政策規格專案，IDSA 提供架構與治理文件，Gaia-X 定義其生態系統的架構與信任要求，W3C 提供共用基礎標準。此外，Catena-X 提供產業規範，ISO/IEC 制定國際標準，DSSC 提供建置指引。
+## 流程說明
 
-### 規格總表
+①～⑫ 對應架構圖的流程順序。⑨～⑪ 分別記錄 Pull 資料與 Push 資料，共十五列。
 
-Eclipse Dataspace 的五個規格專案如下。各專案團隊負責開發與維護，Eclipse Dataspace Working Group（EDWG）依 Eclipse 規格流程審核專案建立與發布。[官方分工說明](https://dataspace.eclipse.org/faq/)
+實作狀態記錄本專案進度：⬜ 未開始、🚧 進行中、✅ 已完成、➖ 不適用。
 
-| 規格／文件 | 用途 | 維護組織 | 發布狀態 |
+| 編號 | 流程 | 說明 | 實作狀態 |
 |---|---|---|---|
-| [DSP — Dataspace Protocol](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/2025-1/) | 互通協定：資料目錄查詢、合約協商與傳輸流程管理。 | Eclipse Foundation／DSP 專案 | 已發布 |
-| [DCP — Decentralized Claims Protocol](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol/v1.0.1/) | 身分與憑證協定：組織身分識別、可驗證憑證的申請與出示。 | Eclipse Foundation／DCP 專案 | 已發布 |
-| [Data Plane Signaling](https://eclipse-dataplane-signaling.github.io/dataplane-signaling/HEAD/) | 傳輸控制協定：控制平面與資料平面之間的訊息、狀態及 API。 | Eclipse Foundation／Data Plane Signaling 專案 | 草案（RC） |
-| [CAP — Conformity Assessment Policy and Credential Profile](https://eclipse.dev/dataspace-cap/) | 政策與憑證規格：以共用語意、政策與可驗證憑證表達及檢查符合性要求。 | Eclipse Foundation／CAP 專案 | 未確認 |
-| [DRP — Data Rights Policies Profile](https://github.com/eclipse-dataspace-drp/DataRightsProfile/blob/main/Data%20Rights%20Policy%20Profile.md) | 資料權利規格：表達權利持有者的政策與授權證據，銜接信任框架要求。 | Eclipse Foundation／DRP 專案 | 未確認 |
+| ① | 申請加入 | 組織透過 Portal / Marketplace 提交申請，由 Onboarding 處理資料與資格審查。 | ⬜ 未開始 |
+| ② | 核准並登錄 | 審核通過後，將成員身分、狀態與服務資訊登錄至 Participant & Trust Registry。 | ⬜ 未開始 |
+| ③ | 取得憑證 | 組織的 Identity Service 向 Credential Issuer 申請憑證；Issuer 依資格簽發，交由組織持有與出示。 | ⬜ 未開始 |
+| ④ | 刊登資料與政策 | 提供者透過 Portal / Marketplace 的授權管理操作，將資料描述、可見性與使用政策設定至自己的 Control Plane。 | ⬜ 未開始 |
+| ⑤ | 同步可見目錄 | Federated Catalog 查詢提供者的 Control Plane，聚合其有權取得的 metadata 與資料供應資訊。 | ⬜ 未開始 |
+| ⑥ | 搜尋資料 | 消費者透過 Portal / Marketplace 查詢 Federated Catalog，找到資料與提供者。 | ⬜ 未開始 |
+| ⑦ | 查詢目錄與驗證資格 | 消費端 Control Plane 查詢提供者目錄；相關互動透過 DCP 出示與驗證憑證，檢查資格及政策條件。 | ⬜ 未開始 |
+| ⑧ | 協商合約 | 雙方 Control Plane 透過 DSP 協商資料使用條件，建立協議。 | ⬜ 未開始 |
+| ⑨ | Pull 資料 | **準備並請求傳輸：** B 準備資料平面，再由 Control Plane 依協議向 A 提出傳輸請求。 | ⬜ 未開始 |
+| ⑨ | Push 資料 | **準備並請求傳輸：** B 準備接收端點，將端點與必要存取資訊隨傳輸請求交給 A。 | ⬜ 未開始 |
+| ⑩ | Pull 資料 | **啟動資料平面：** A 啟動資料存取，透過雙方 Control Plane 將 A 的端點與必要存取資訊交給 B 的 Data Plane。 | ⬜ 未開始 |
+| ⑩ | Push 資料 | **啟動資料平面：** A 的 Control Plane 將 B 的接收端點與必要存取資訊交給 A 的 Data Plane，協調啟動傳輸。 | ⬜ 未開始 |
+| ⑪ | Pull 資料 | **實際傳輸：** B 的 Data Plane 主動向 A 請求資料；A 回傳，B 將資料交給應用。 | ⬜ 未開始 |
+| ⑪ | Push 資料 | **實際傳輸：** A 的 Data Plane 主動將資料送至 B 的接收端點，B 將資料交給應用。 | ⬜ 未開始 |
+| ⑫ | 查詢交換紀錄 | 組織透過 Portal / Marketplace 查詢 Audit / Clearing House，取得協議、交換事件與執行結果。 | ⬜ 未開始 |
 
-DSP 的早期版本由 International Data Spaces Association（IDSA）維護；後續版本移至 Eclipse Foundation 治理下的 DSP 專案。[官方版本沿革](https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol#about-versions)
+目錄同步、資格驗證與事件留存會在相關互動中持續或重複發生。⑫ 表示查詢紀錄，事件從前面的步驟就開始保存。
 
-其他相關規格與文件如下，依維護組織排列。每份文件獨立列出；Catena-X Standards 為產業標準集合入口。
+Pull 資料由消費端發起實際資料請求；Push 資料由提供端主動送至消費端指定的端點。兩者的傳輸流程都由消費者透過 DSP 提出請求。[DSP 傳輸流程](https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1/specifications/transfer/transfer.process.protocol.md)
 
-| 規格／文件 | 用途 | 維護組織 | 發布狀態 |
-|---|---|---|---|
-| [IDS-RAM — IDS Reference Architecture Model](https://kb.internationaldataspaces.org/external/ram/) | 參考架構：提供資料空間的架構原則、設計模式與建置建議。 | IDSA／相關工作小組 | 草案（RC） |
-| [IDSA Rulebook](https://kb.internationaldataspaces.org/external/rulebook/001_Introduction/) | 治理文件：定義參與角色、治理原則、信任與功能要求。 | IDSA／相關工作小組 | 已發布 |
-| [Gaia-X Architecture Document](https://docs.gaia-x.eu/technical-committee/architecture-document/25.11/) | 架構規格：說明 Gaia-X 信任框架、資料交易與技術互通要求。 | Gaia-X Association（AISBL） | 已發布 |
-| [Gaia-X Compliance Document](https://docs.gaia-x.eu/policy-rules-committee/compliance-document/3.1.0/) | 符合性規範：定義參與者、服務與信任錨點的要求及評估規則。 | Gaia-X Association（AISBL） | 已發布 |
-| [Gaia-X Identity, Credential and Access Management Document（ICAM）](https://docs.gaia-x.eu/technical-committee/identity-credential-access-management/25.11/) | 身分與存取規格：定義數位身分、憑證、授權與存取管理要求。 | Gaia-X Association（AISBL） | 已發布 |
-| [Gaia-X Data Exchange Document](https://docs.gaia-x.eu/technical-committee/data-exchange/25.07/) | 資料交換規格：定義資料產品、交換服務、目錄、存取紀錄與使用協議。 | Gaia-X Association（AISBL） | 已發布 |
-| [Data Catalog Vocabulary（DCAT）— Version 3](https://www.w3.org/TR/vocab-dcat-3/) | 資料目錄標準：提供描述資料集、資料服務與目錄的共用詞彙。 | W3C | 已發布 |
-| [ODRL Information Model 2.2](https://www.w3.org/TR/odrl-model/) | 政策模型標準：表達資料使用的許可、禁止、義務與限制。 | W3C | 已發布 |
-| [Decentralized Identifiers（DIDs）v1.0](https://www.w3.org/TR/did-core/) | 身分識別標準：定義去中心化識別碼、文件模型與驗證方式的表示。 | W3C | 已發布 |
-| [Verifiable Credentials Data Model v2.0](https://www.w3.org/TR/vc-data-model-2.0/) | 憑證模型標準：定義可驗證憑證與出示資料的結構及角色關係。 | W3C | 已發布 |
-| [Catena-X Standards](https://catenax-ev.github.io/docs/standards/overview) | 產業標準集合：規範汽車產業資料空間的資料模型、API、流程與互通要求。 | Catena-X Automotive Network e.V. | 持續更新 |
-| [ISO/IEC FDIS 20151-1 — Dataspaces: Concepts and characteristics](https://www.iso.org/standard/86589.html) | 國際標準草案：定義 Dataspace 的基本概念與必要特性。 | ISO/IEC JTC 1/SC 38 | 草案（FDIS） |
-| [DSSC Blueprint](https://blueprint.dssc.eu/) | 建置指引：提供資料空間的功能構件、治理方法與規格選用建議。 | Data Spaces Support Centre（DSSC）專案聯盟 | 已發布 |
+各協定負責不同的互動：
 
-### 資料來源與更新
+| 規格 | 互動範圍 | 規範內容 |
+|---|---|---|
+| [DSP — Dataspace Protocol](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/2025-1/) | 雙方 Control Plane | 目錄查詢、合約協商、傳輸流程訊息與狀態。 |
+| [DCP — Decentralized Claims Protocol](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol/v1.0.1/) | 憑證簽發者、持有者與驗證者 | 組織身分、憑證申請與出示。 |
+| [Data Plane Signaling](https://github.com/eclipse-dataplane-signaling/dataplane-signaling/blob/main/specifications/signaling.md) | Control Plane 與 Data Plane | 資料流準備、啟動、暫停、恢復與結束的控制介面。 |
 
-最後查核日期：2026-09-10（UTC）。
+實際資料使用雙方約定的傳輸協定交換，例如 HTTP 或 MQTT。[DSP 規格範圍](https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1/specifications/common/scope.md)
 
-規格名稱直接連到官方閱讀版；無獨立閱讀版時，使用官方規格版本庫或專案頁。發布狀態描述查核當日所連文件的狀態，不另追蹤最新版本號；正式名稱中的版本與標準編號予以保留。部分連結包含官方版本路徑，部分入口會隨官方更新。
+## 參與者服務
 
-- **已發布**：官方已發布的規格、標準或指引，例如正式 Release 或 W3C Recommendation。
-- **草案**：官方標示為 Draft、Release Candidate（RC）或 Final Draft International Standard（FDIS）等尚未定版的文件。
-- **持續更新**：官方持續維護的文件或標準集合入口；個別文件的狀態仍須各自確認。
-- **未確認**：所連文件的官方資訊不足以確認規格發布狀態，不推定為已發布或草案。
+參與者側元件代表組織執行身分驗證、合約協商與資料交換。以下依 [IDS-RAM](https://kb.internationaldataspaces.org/external/ram/) 與 [DSSC Blueprint](https://blueprint.dssc.eu/) 整理功能分工。
 
-CAP 與 DRP 的所連文件未明確提供可確認的規格發布狀態，因此標為「未確認」。Eclipse 專案的 Incubating 描述專案生命週期，不直接代表規格的發布狀態。IDS-RAM 的 RC 狀態依 [IDSA Knowledge Base 發布說明](https://kb.internationaldataspaces.org/#version-2026-2) 判定。
+| 名稱 | 用途與邊界 | 相關文件連結 |
+|---|---|---|
+| Control Plane | 管理資料資產與本地目錄、評估政策、協商合約及協調傳輸流程。 | [DSP：互通流程](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/2025-1/)、[DCAT：資料目錄模型](https://www.w3.org/TR/vocab-dcat-3/)、[ODRL：使用政策模型](https://www.w3.org/TR/odrl-model/)、[DRP：資料權利與授權證據](https://github.com/eclipse-dataspace-drp/DataRightsProfile/blob/main/Data%20Rights%20Policy%20Profile.md) |
+| Data Plane | 執行實際資料傳輸與傳輸端授權，串接來源或接收端點，依約定進行 Pull 資料或 Push 資料。 | [Data Plane Signaling：資料流控制](https://github.com/eclipse-dataplane-signaling/dataplane-signaling/blob/main/specifications/signaling.md) |
+| Identity Service | 管理組織識別、持有的憑證與憑證出示，支援身分及資格驗證。 | [DCP：憑證互動流程](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol/v1.0.1/)、[DID：識別碼與識別文件](https://www.w3.org/TR/did-core/)、[VC：可驗證憑證模型](https://www.w3.org/TR/vc-data-model-2.0/) |
 
-更新索引時，應逐項核對官方文件、維護組織、發布狀態與連結，再更新整份索引的查核日期。
+圖中的 Data Source 與 Application 是既有資料來源及應用。
+
+## 共用／聯邦服務
+
+共用／聯邦元件協助參與者建立信任、發現資料、共用語意與查詢交換紀錄。
+
+| 名稱 | 用途與邊界 | 相關文件連結 |
+|---|---|---|
+| Portal / Marketplace | 提供申請加入、刊登、搜尋及交換操作入口，串接相關元件。 | [DSSC Blueprint：資料供應與發現](https://blueprint.dssc.eu/) |
+| Onboarding | 管理加入申請、文件審查、核准與退出流程，協調成員登錄及憑證申請資格。 | [IDSA Rulebook：角色、治理與成員管理](https://kb.internationaldataspaces.org/external/rulebook/001_Introduction/) |
+| Participant & Trust Registry | 管理成員、狀態、服務端點、受信任簽發者及信任設定，提供查詢。 | [IDSA Rulebook：信任框架與參與資格](https://kb.internationaldataspaces.org/external/rulebook/001_Introduction/) |
+| Credential Issuer | 依資格簽發成員或其他資格憑證，管理憑證狀態及撤銷。 | [DCP：憑證申請與簽發](https://eclipse-dataspace-dcp.github.io/decentralized-claims-protocol/v1.0.1/)、[VC：憑證模型](https://www.w3.org/TR/vc-data-model-2.0/)、[CAP：符合性政策與憑證語意](https://eclipse-dataspace-cap.github.io/) |
+| Federated Catalog | 聚合有權取得的資料與服務 metadata，提供跨組織搜尋。參與者亦可直接查詢提供者目錄。 | [DCAT：目錄與資料服務描述](https://www.w3.org/TR/vocab-dcat-3/)、[DSP：目錄查詢](https://eclipse-dataspace-protocol-base.github.io/DataspaceProtocol/2025-1/) |
+| Vocabulary & Schema | 管理與發布共用詞彙、資料模型、schema 及版本，供參與者描述與解讀資料。 | [DSSC Blueprint：資料模型與語意](https://blueprint.dssc.eu/) |
+| Audit / Clearing House | 接收並保存協議與交換事件，提供追溯、稽核及爭議查證。 | [IDSA Rulebook：可觀測性與治理](https://kb.internationaldataspaces.org/external/rulebook/001_Introduction/)、[DSSC Blueprint：來源追溯與交換紀錄](https://blueprint.dssc.eu/) |
+
+Federated Catalog 保存搜尋所需的 metadata；實際資料依協議在參與者之間交換。目錄同步與搜尋結果亦須遵守相應的可見性與存取政策。
+
+## 營運支援服務
+
+營運支援元件提供登入、秘密管理、狀態保存與監控能力，可整合各組織既有的基礎設施。
+
+| 名稱 | 用途與邊界 | 相關文件連結 |
+|---|---|---|
+| IAM | 管理使用者登入、角色與管理操作授權；Identity Service 則負責組織身分及資格憑證。 | — |
+| Secrets / KMS | 保存或管理金鑰、API 秘密與資料來源存取資訊，提供受控存取及金鑰操作。 | — |
+| Database | 保存元件所需的資產 metadata、協議、流程狀態、成員及憑證等資料。 | — |
+| Observability | 收集日誌、指標與追蹤資訊，支援健康監控及故障排查。 | [DSSC Blueprint：可觀測性](https://blueprint.dssc.eu/) |
+
+「—」表示尚未選定對應技術文件。Observability 支援系統運作，Audit / Clearing House 保存資料交換的業務紀錄。
