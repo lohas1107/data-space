@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dataspace Services — Logical Architecture</title>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: #ffffff; color: #262a32; font-family: 'Geist', system-ui, sans-serif; }
+    .diagram-scroll { overflow-x: auto; }
+    .diagram-scroll:focus-visible { outline: 3px solid #378054; outline-offset: -3px; }
+    .diagram { display: block; width: 100%; min-width: 1280px; max-width: 1280px; height: auto; margin: 0 auto; }
+    svg text { white-space: pre; }
+    .page-title { font-size: 32px; font-weight: 600; }
+    .region-title { font-size: 26px; font-weight: 600; }
+    .agent-title { font-size: 24px; font-weight: 600; }
+    .card-title { font-size: 22px; font-weight: 600; }
+    .federation-card-title { font-size: 20px; font-weight: 600; fill: #287148; }
+    .federation-body { font-size: 15px; font-weight: 400; }
+    .value-card-title { font-size: 18px; font-weight: 500; fill: #626475; }
+    .body-text { font-size: 18px; font-weight: 400; }
+    .caption { font-size: 15px; font-weight: 400; fill: #5b626e; }
+    .small-label { font-size: 14px; font-weight: 400; fill: #5b626e; }
+    .federation-title { fill: #287148; }
+    .participant-title { fill: #875720; }
+    .value-title { fill: #626475; }
+    .identity-title { fill: #516391; }
+    .federation-region { fill: #f6faf7; stroke: #378054; stroke-width: 1.2; }
+    .participant-region { fill: #fdfaf6; stroke: #966127; stroke-width: 1.2; }
+    .value-region { fill: #f8f8fa; stroke: #737585; stroke-width: 1.2; }
+    .agent-region { fill: #ffffff; stroke: #c9aa83; stroke-width: 1.2; }
+    .service-card { fill: #ffffff; stroke: #d9dfe4; }
+    .identity-card { fill: #f8faff; stroke: #c9d2e6; }
+    .control-card { fill: #fffdf8; stroke: #d9c7ae; }
+    .data-card { fill: #f7fbfd; stroke: #b7d0dc; }
+    .external-card { fill: #f5f6f8; stroke: #c4c9d0; }
+    .protocol-line { fill: none; stroke: #875720; stroke-width: 2; }
+    .data-line { fill: none; stroke: #326e8d; stroke-width: 2.5; }
+    .details { max-width: 1280px; margin: 0 auto; padding: 12px 24px 64px; line-height: 1.75; }
+    .details h1 { font-size: 24px; margin: 24px 0 12px; }
+    .details h2 { font-size: 20px; margin: 32px 0 12px; }
+    .details p { margin: 12px 0; }
+    .details a { color: #287148; text-underline-offset: 3px; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 15px; }
+    th, td { padding: 12px 16px; vertical-align: top; border-bottom: 1px solid #e1e6e9; }
+    th { background: #f4f7f5; font-weight: 600; }
+    .protocol-name { white-space: nowrap; }
+    .protocol-name span { display: block; }
+    code { font-size: 0.94em; overflow-wrap: anywhere; }
+    .boundary-notes { padding-left: 24px; }
+    .boundary-notes li { margin: 12px 0; }
+    .scroll-hint { color: #5b626e; font-size: 14px; }
+    @media (max-width: 700px) { .details { padding: 12px 20px 40px; } }
+    @media print {
+      @page { size: A3 portrait; margin: 10mm; }
+      .diagram-scroll { overflow: visible; }
+      .diagram { min-width: 0; max-width: none; }
+      .details { max-width: none; padding: 0; }
+      .table-scroll { overflow: visible; }
+      .scroll-hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <div class="diagram-scroll" role="region" aria-label="Dataspace 架構圖，可橫向捲動" tabindex="0">
+    <!-- Logical architecture. Each SVG text element is a complete, single-line label. -->
+<svg class="diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 1960" width="1280" height="1960" role="img" aria-labelledby="dataspace-services-title dataspace-services-desc" font-family="'Geist', system-ui, sans-serif" fill="#262a32">
+<title id="dataspace-services-title">Dataspace Services — Logical Architecture</title>
+<desc id="dataspace-services-desc">上方 Federation Services 為一列四欄：Trust Services、Catalogue Services、Vocabulary Services、Observability Services。中央 Participant Agent Services 並排包含 Participant Agent (Provider) 與 Participant Agent (Consumer)，兩者各自具有三項身分邏輯服務、Control Plane 與 Data Plane。Dataspace Protocol 連接雙方 Control Plane；Data Plane Signaling 連接各自的 Control Plane 與 Data Plane。Data Source 與 Application 位於服務區外，資料內容從 Provider 流向 Consumer。底部為 Value Creation Services。圖下表格補充憑證與聯邦目錄的連線；方框代表邏輯服務、功能或介面，不代表獨立部署要求。</desc>
+<defs>
+  <marker id="control-arrow" markerWidth="8" markerHeight="7" refX="7" refY="3.5" orient="auto-start-reverse" markerUnits="userSpaceOnUse"><path d="M 0 0 L 8 3.5 L 0 7 Z" fill="#875720"/></marker>
+  <marker id="data-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 4 L 0 8 Z" fill="#326e8d"/></marker>
+</defs>
+<rect width="1280" height="1960" fill="#ffffff"/>
+<text x="24" y="48" class="page-title" >Dataspace Services — Logical Architecture</text>
+<text x="24" y="78" class="caption" >Logical services, internal functions and protocol interfaces</text>
+<path class="protocol-line" d="M 26 104 H 70" marker-start="url(#control-arrow)" marker-end="url(#control-arrow)"/>
+<text x="82" y="110" class="caption" >Protocol interactions</text>
+<path class="data-line" d="M 330 104 H 374" marker-end="url(#data-arrow)"/>
+<text x="386" y="110" class="caption" >Data content direction</text>
+<g id="federation-services" class="service-region"><rect x="24" y="132" width="1232" height="232" rx="8" class="federation-region" />
+<text x="40" y="168" class="region-title federation-title" >Federation Services</text>
+<g data-card="trust-services"><rect x="40" y="188" width="288" height="152" rx="8" class="service-card" /><text x="56" y="218" class="federation-card-title" >Trust Services</text>
+<text x="56" y="250" class="federation-body" >Issuer Service</text>
+<text x="56" y="277" class="federation-body" >Registration System</text>
+<text x="56" y="304" class="federation-body" >Verifiable Data Registry</text>
+</g>
+<g data-card="catalogue-services"><rect x="344" y="188" width="288" height="152" rx="8" class="service-card" /><text x="360" y="218" class="federation-card-title" >Catalogue Services</text>
+<text x="360" y="250" class="federation-body" >Federated Catalogue</text>
+<text x="360" y="277" class="federation-body" >Catalog Protocol</text>
+</g>
+<g data-card="vocabulary-services"><rect x="648" y="188" width="288" height="152" rx="8" class="service-card" /><text x="664" y="218" class="federation-card-title" >Vocabulary Services</text>
+<text x="664" y="250" class="federation-body" >Shared Vocabularies and Data Models</text>
+</g>
+<g data-card="observability-services"><rect x="952" y="188" width="288" height="152" rx="8" class="service-card" /><text x="968" y="218" class="federation-card-title" >Observability Services</text>
+<text x="968" y="250" class="federation-body" >Data Sharing Records</text>
+<text x="968" y="277" class="federation-body" >Provenance and Traceability</text>
+</g>
+</g>
+<g id="participant-agent-services" class="service-region"><rect x="24" y="400" width="1232" height="1170" rx="8" class="participant-region" />
+<text x="40" y="438" class="region-title participant-title" >Participant Agent Services</text>
+<text x="40" y="464" class="caption" >Provider and Consumer are roles in this exchange; both participants can hold and verify credentials.</text>
+<g id="participant-agent-provider"><rect x="40" y="486" width="576" height="1064" rx="8" class="agent-region" />
+<text x="56" y="520" class="agent-title participant-title" >Participant Agent (Provider)</text>
+<g data-card="provider-security-token-service"><rect x="56" y="542" width="544" height="86" rx="8" class="identity-card" /><text x="72" y="572" class="card-title identity-title" >Security Token Service</text>
+<text x="72" y="604" class="body-text" >Self-Issued Identity Token Creation</text>
+</g>
+<g data-card="provider-credential-service"><rect x="56" y="644" width="544" height="140" rx="8" class="identity-card" /><text x="72" y="674" class="card-title identity-title" >Credential Service</text>
+<text x="72" y="706" class="body-text" >Verifiable Credential Storage</text>
+<text x="72" y="733" class="body-text" >Verifiable Credential Delivery Reception</text>
+<text x="72" y="760" class="body-text" >Verifiable Presentation Provision</text>
+</g>
+<g data-card="provider-decentralized-identifier-service"><rect x="56" y="800" width="544" height="98" rx="8" class="identity-card" /><text x="72" y="830" class="card-title identity-title" >Decentralized Identifier Service</text>
+<text x="72" y="862" class="body-text" >Identifier Document Management and Publication</text>
+</g>
+<text x="328" y="923" class="caption identity-title" text-anchor="middle">Decentralized Claims Protocol</text>
+<g data-card="provider-control-plane"><rect x="56" y="942" width="544" height="376" rx="8" class="control-card" />
+<text x="72" y="975" class="card-title participant-title" >Control Plane</text>
+<text x="72" y="1009" class="body-text" >Local Catalogue Publication</text>
+<text x="72" y="1037" class="body-text" >Catalog Protocol</text>
+<text x="72" y="1065" class="body-text" >Contract Negotiation Protocol</text>
+<text x="72" y="1093" class="body-text" >Transfer Process Protocol</text>
+<text x="72" y="1121" class="body-text" >Protocol Version Metadata Endpoint</text>
+<text x="72" y="1161" class="body-text" >Identity and Credential Verification</text>
+<text x="72" y="1189" class="body-text" >Policy Administration and Evaluation</text>
+<text x="72" y="1274" class="body-text" >Data Plane Signaling Control Plane Endpoint</text>
+<path d="M 72 1210 H 584" stroke="#e4d7c7"/>
+<text x="72" y="1240" class="small-label" >Data flow callbacks and agreement retrieval</text>
+</g>
+<path class="protocol-line" d="M 328 1318 V 1380" marker-start="url(#control-arrow)" marker-end="url(#control-arrow)"/>
+<text x="346" y="1355" class="caption participant-title" >Data Plane Signaling</text>
+<g data-card="provider-data-plane"><rect x="56" y="1380" width="544" height="154" rx="8" class="data-card" /><text x="72" y="1410" class="card-title" >Data Plane</text>
+<text x="72" y="1438" class="body-text" >Data Plane Signaling Data Plane Endpoint</text>
+<text x="72" y="1462" class="body-text" >Data Flow State Machine</text>
+<text x="72" y="1486" class="body-text" >Data Transfer and Access Enforcement</text>
+<text x="72" y="1510" class="body-text" >Data Source Integration</text>
+</g>
+</g>
+<g id="participant-agent-consumer"><rect x="664" y="486" width="576" height="1064" rx="8" class="agent-region" />
+<text x="680" y="520" class="agent-title participant-title" >Participant Agent (Consumer)</text>
+<g data-card="consumer-security-token-service"><rect x="680" y="542" width="544" height="86" rx="8" class="identity-card" /><text x="696" y="572" class="card-title identity-title" >Security Token Service</text>
+<text x="696" y="604" class="body-text" >Self-Issued Identity Token Creation</text>
+</g>
+<g data-card="consumer-credential-service"><rect x="680" y="644" width="544" height="140" rx="8" class="identity-card" /><text x="696" y="674" class="card-title identity-title" >Credential Service</text>
+<text x="696" y="706" class="body-text" >Verifiable Credential Storage</text>
+<text x="696" y="733" class="body-text" >Verifiable Credential Delivery Reception</text>
+<text x="696" y="760" class="body-text" >Verifiable Presentation Provision</text>
+</g>
+<g data-card="consumer-decentralized-identifier-service"><rect x="680" y="800" width="544" height="98" rx="8" class="identity-card" /><text x="696" y="830" class="card-title identity-title" >Decentralized Identifier Service</text>
+<text x="696" y="862" class="body-text" >Identifier Document Management and Publication</text>
+</g>
+<text x="952" y="923" class="caption identity-title" text-anchor="middle">Decentralized Claims Protocol</text>
+<g data-card="consumer-control-plane"><rect x="680" y="942" width="544" height="376" rx="8" class="control-card" />
+<text x="696" y="975" class="card-title participant-title" >Control Plane</text>
+<text x="696" y="1009" class="body-text" >Catalogue Discovery and Query</text>
+<text x="696" y="1037" class="body-text" >Catalog Protocol</text>
+<text x="696" y="1065" class="body-text" >Contract Negotiation Protocol</text>
+<text x="696" y="1093" class="body-text" >Transfer Process Protocol</text>
+<text x="696" y="1121" class="body-text" >Protocol Version Metadata Endpoint</text>
+<text x="696" y="1161" class="body-text" >Identity and Credential Verification</text>
+<text x="696" y="1189" class="body-text" >Policy Administration and Evaluation</text>
+<text x="696" y="1274" class="body-text" >Data Plane Signaling Control Plane Endpoint</text>
+<path d="M 696 1210 H 1208" stroke="#e4d7c7"/>
+<text x="696" y="1240" class="small-label" >Data flow callbacks and agreement retrieval</text>
+</g>
+<path class="protocol-line" d="M 952 1318 V 1380" marker-start="url(#control-arrow)" marker-end="url(#control-arrow)"/>
+<text x="970" y="1355" class="caption participant-title" >Data Plane Signaling</text>
+<g data-card="consumer-data-plane"><rect x="680" y="1380" width="544" height="154" rx="8" class="data-card" /><text x="696" y="1410" class="card-title" >Data Plane</text>
+<text x="696" y="1438" class="body-text" >Data Plane Signaling Data Plane Endpoint</text>
+<text x="696" y="1462" class="body-text" >Data Flow State Machine</text>
+<text x="696" y="1486" class="body-text" >Data Transfer and Access Enforcement</text>
+<text x="696" y="1510" class="body-text" >Application Integration</text>
+</g>
+</g>
+<g id="participant-protocol-links">
+<title>Dataspace Protocol connects Control Planes. A data transfer protocol connects Data Planes.</title>
+<path class="protocol-line" d="M 600 1080 H 680" marker-start="url(#control-arrow)" marker-end="url(#control-arrow)"/>
+<text x="640" y="1200" class="small-label participant-title" text-anchor="middle" transform="rotate(-90 640 1200)">Dataspace Protocol</text>
+<path class="data-line" d="M 600 1462 H 680" marker-end="url(#data-arrow)"/>
+</g></g>
+<g id="existing-systems">
+<path class="data-line" d="M 328 1610 V 1534" marker-end="url(#data-arrow)"/>
+<path class="data-line" d="M 952 1534 V 1610" marker-end="url(#data-arrow)"/>
+<g data-card="data-source"><rect x="104" y="1610" width="448" height="80" rx="8" class="external-card" /><text x="328" y="1643" class="card-title" text-anchor="middle">Data Source</text><text x="328" y="1672" class="caption" text-anchor="middle">Existing participant system</text></g>
+<g data-card="application"><rect x="728" y="1610" width="448" height="80" rx="8" class="external-card" /><text x="952" y="1643" class="card-title" text-anchor="middle">Application</text><text x="952" y="1672" class="caption" text-anchor="middle">Existing participant system</text></g>
+</g>
+<text x="640" y="1714" class="caption" text-anchor="middle">Data content flows from Provider to Consumer in both Pull and Push transfers.</text>
+<g id="value-creation-services" class="service-region"><rect x="24" y="1740" width="1232" height="164" rx="8" class="value-region" />
+<text x="40" y="1776" class="region-title value-title" >Value Creation Services</text>
+<g data-card="data-marketplace"><rect x="40" y="1796" width="320" height="62" rx="8" class="service-card" /><text x="200" y="1834" class="value-card-title" text-anchor="middle">Data Marketplace</text></g>
+<g data-card="data-analytics-service"><rect x="376" y="1796" width="352" height="62" rx="8" class="service-card" /><text x="552" y="1834" class="value-card-title" text-anchor="middle">Data Analytics Service</text></g>
+<g data-card="artificial-intelligence-service"><rect x="744" y="1796" width="496" height="62" rx="8" class="service-card" /><text x="992" y="1834" class="value-card-title" text-anchor="middle">Cross-Data-Space Artificial Intelligence Service</text></g>
+<text x="40" y="1885" class="caption" >Examples selected according to use cases and governance rules.</text>
+</g>
+<text x="24" y="1938" class="caption" >Functional groupings do not imply separate deployments. Protocol connections and boundaries are explained below.</text>
+</svg>
+  </div>
+
+<section class="details" aria-labelledby="architecture-notes-title">
+  <p class="scroll-hint">圖中元件名稱保持單行；較窄的視窗可橫向捲動。下表補充憑證與聯邦目錄的連線，以及規格邊界。</p>
+  <h1 id="architecture-notes-title">架構與規格對照</h1>
+  <p>本圖直接依官方架構文件與協定規格整理。方框包含邏輯服務、內部功能及協定介面，並非必須逐一獨立部署的微服務清單。Provider 與 Consumer 是這次資料交換的角色；兩個 Participant Agent 都可以持有憑證並驗證對方。</p>
+  <h2>規格基準</h2>
+  <p>版本核對日期：<time datetime="2026-09-14">2026-09-14</time>。架構分類與協定符合性分別依以下文件判斷。</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th scope="col">規格</th><th scope="col">版本</th><th scope="col">範圍</th></tr></thead>
+    <tbody>
+      <tr><td class="protocol-name"><a href="https://blueprint.dssc.eu/">Data Spaces Support Centre Blueprint</a></td><td>3.0</td><td>服務分類與功能架構。</td></tr>
+      <tr><td class="protocol-name"><a href="https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/tree/v1.0.1/specifications">Decentralized Claims Protocol</a></td><td>v1.0.1，正式維護版</td><td>身分驗證、可驗證憑證申請與簽發、可驗證呈現的查詢與驗證。</td></tr>
+      <tr><td class="protocol-name"><a href="https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/tree/2025-1-err2/specifications">Dataspace Protocol</a></td><td>2025-1-err2，正式勘誤版</td><td>目錄、合約協商、傳輸流程訊息與狀態。</td></tr>
+      <tr><td class="protocol-name"><a href="https://github.com/eclipse-dataplane-signaling/dataplane-signaling/blob/v1.0-RC4/specifications/signaling.md">Data Plane Signaling</a></td><td>v1.0-RC4，候選版</td><td>Control Plane 與 Data Plane 的資料流控制、回報與註冊。</td></tr>
+    </tbody>
+  </table></div>
+  <h2>協定連線與責任</h2>
+  <div class="table-scroll"><table>
+    <thead><tr><th scope="col">協定或機制</th><th scope="col">連線與責任</th></tr></thead>
+    <tbody>
+      <tr><td class="protocol-name"><span>Decentralized Claims Protocol</span><a href="https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/credential.issuance.protocol.md">Credential Issuance Protocol</a></td><td>參與者的申請端向 Issuer Service 申請 Verifiable Credential。核准後，Issuer Service 非同步交付至該參與者的 Credential Service；收到申請確認不代表憑證已經簽發。</td></tr>
+      <tr><td class="protocol-name"><span>Decentralized Claims Protocol</span><a href="https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/verifiable.presentation.protocol.md">Verifiable Presentation Protocol</a></td><td>驗證端向對方的 Credential Service 查詢 Verifiable Presentation；Credential Service 檢查請求權限並回傳允許出示的內容，驗證端再驗證憑證及評估政策。這不是雙方 Security Token Service 互相交換憑證。</td></tr>
+      <tr><td class="protocol-name"><span>Decentralized Claims Protocol</span><a href="https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/base.protocol.md">Self-Issued Identity Token</a></td><td>參與者從自己的 Security Token Service 取得 token，附於相關請求；接收端依 Decentralized Identifier 解析識別文件並驗證。其規格原名是 Self-Issued ID Token，取得 token 的內部介面屬實作選擇。</td></tr>
+      <tr><td class="protocol-name"><span>Dataspace Protocol</span><a href="https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/catalog/catalog.protocol.md">Catalog Protocol</a></td><td>Consumer 的 Control Plane 查詢 Provider 的目錄或資料集描述。Federated Catalogue 也可以透過此協定取得參與者目錄；存取受保護目錄時需遵守相應身分與資格要求。</td></tr>
+      <tr><td class="protocol-name"><span>Dataspace Protocol</span><a href="https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/negotiation/contract.negotiation.protocol.md">Contract Negotiation Protocol</a></td><td>雙方 Control Plane 交換協商訊息，維護協商狀態並建立 Agreement。</td></tr>
+      <tr><td class="protocol-name"><span>Dataspace Protocol</span><a href="https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/transfer/transfer.process.protocol.md">Transfer Process Protocol</a></td><td>雙方 Control Plane 交換傳輸請求、啟動、暫停、完成與終止訊息。Pull 與 Push 的傳輸流程皆由 Consumer 提出請求；實際資料傳輸的發起方則依傳輸類型而異。</td></tr>
+      <tr><td class="protocol-name"><a href="https://github.com/eclipse-dataplane-signaling/dataplane-signaling/blob/v1.0-RC4/specifications/signaling.md">Data Plane Signaling</a></td><td>每個參與者的 Control Plane 與其 Data Plane 交換資料流控制、狀態回報及相關資訊。雙方註冊可透過設定或規格定義的選用端點；Control Plane Endpoint 與 Data Plane Endpoint 都需要適當保護。</td></tr>
+      <tr><td class="protocol-name"><a href="https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/common/scope.md">Data Transfer Protocol</a></td><td>雙方 Data Plane 使用約定的資料傳輸協定交換內容，例如 Hypertext Transfer Protocol。圖中的藍色箭頭只表示資料內容方向；Dataspace Protocol 和 Data Plane Signaling 不承載這條連線的實際資料內容。</td></tr>
+    </tbody>
+  </table></div>
+  <h2>Data Plane Signaling 的兩側介面</h2>
+  <div class="table-scroll"><table>
+    <thead><tr><th scope="col">介面</th><th scope="col">接收的操作</th></tr></thead>
+    <tbody>
+      <tr><td class="protocol-name">Data Plane Endpoint</td><td>Prepare、Start、Started Notification、Suspend、Resume、Terminate、Completed、Status。</td></tr>
+      <tr><td class="protocol-name">Control Plane Endpoint</td><td>Prepared、Started、Completed、Errored，以及可供 Data Plane 查詢 Agreement 的介面。</td></tr>
+    </tbody>
+  </table></div>
+  <p>兩側操作依角色與資料流狀態使用，並非每次傳輸都呼叫全部操作。準備與啟動可同步或非同步完成。<strong>Data Flow 與 Transfer Process 是不同的狀態機。</strong>候選版 v1.0-RC4 沒有從 Data Plane 向 Control Plane 發送的 terminated 回呼；不可恢復的錯誤由 errored 回報，再由 Control Plane 判斷如何處理。<a href="https://github.com/eclipse-dataplane-signaling/dataplane-signaling/blob/v1.0-RC4/specifications/signaling.md#control-plane-endpoint">規格依據</a>。</p>
+  <h2>架構邊界</h2>
+  <ul class="boundary-notes">
+    <li><strong>服務與部署：</strong>Security Token Service、Credential Service 與 Decentralized Identifier Service 是邏輯服務，可合併或分開部署。圖中 Credential Service 包含 Credential Store 的保存能力。Issuer Service 也需要自己的身分、金鑰與識別文件能力。Decentralized Identifier Service 展開了規格原名 DID Service 中的縮寫。<a href="https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/dataspace.ecosystem.md">官方系統模型</a>。</li>
+    <li><strong>治理與信任：</strong>將 Registration System 與 Verifiable Data Registry 放入 Trust Services 是本圖的功能映射。Registration System 處理加入與成員治理，位於 Decentralized Claims Protocol 規範範圍外；Verifiable Data Registry 是識別資訊與憑證結構資訊的抽象登錄角色，不等於成員資料庫，也不要求單一中央服務。<a href="https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/trust.model.md">信任模型</a>。</li>
+    <li><strong>角色與政策：</strong>Provider／Consumer 與 Holder／Verifier 是不同角色軸。圖中依這次交換分別顯示目錄發布與查詢，沒有要求 Consumer 發布資料目錄。Policy Administration and Evaluation、整合與驗證方框是功能分組；憑證驗證亦會發生於 Credential Service 等接收受保護請求的元件。Dataspace Protocol 本身不強制使用 Decentralized Claims Protocol，本圖選擇將兩者組合。<a href="https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/dataspace.ecosystem.md#interrelation-to-the-dataspace-protocol">協定關係</a>。</li>
+    <li><strong>版本探索：</strong>Protocol Version Metadata Endpoint 對應 <code>/.well-known/dspace-version</code>。Dataspace Protocol 要求這個端點不加版本且不要求驗證；即使只支援一版仍須提供，並不代表必須支援舊版。<a href="https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/common/common.protocol.md">共同要求</a>。</li>
+    <li><strong>既有系統：</strong>Data Source 與 Application 放在服務區外表示整合邊界；Data Plane 可與既有端點或應用整合。一般消費端應用不自動歸類為 Value Creation Services；底部呈現的是可依使用情境提供的服務示例。<a href="https://blueprint.dssc.eu/?pane=service-definitions&amp;service=value-creation&amp;technical=building-on-top-of-foundational-standards">服務定義</a>。</li>
+    <li><strong>實作規格：</strong>還需選定憑證 profile、識別方法、政策語意與資料傳輸 profile，並依對應規格驗證訊息、狀態機、存取授權與錯誤處理。這張圖提供元件責任與互動邊界，不能取代協定符合性驗證。<a href="https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/dcp.profiles.md">憑證 profiles</a>。</li>
+  </ul>
+</section>
+</main>
+</body>
+</html>
