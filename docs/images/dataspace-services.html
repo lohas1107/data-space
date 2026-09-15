@@ -10,17 +10,10 @@
     .diagram-scroll { overflow: auto; }
     .diagram-scroll:focus-visible { outline: 3px solid #378054; outline-offset: -3px; }
     .diagram { display: block; width: 1600px; height: auto; margin: 0 auto; }
-    .details { max-width: 1200px; margin: 0 auto; padding: 24px 32px 64px; line-height: 1.8; }
-    .details h1 { font-size: 24px; }
-    .details a { color: #287148; text-underline-offset: 3px; }
-    .details li { margin: 8px 0; }
-    .hint { color: #627181; }
     @media print {
       @page { size: A2 portrait; margin: 10mm; }
       .diagram-scroll { overflow: visible; }
       .diagram { width: 100%; }
-      .details { padding: 0; }
-      .hint { display: none; }
     }
   </style>
 </head>
@@ -30,7 +23,7 @@
 <!-- Editable, self-contained SVG. Render this exact SVG with render_architecture.py. -->
 <svg class="diagram" role="img" aria-labelledby="dataspace-services-title dataspace-services-desc" xmlns="http://www.w3.org/2000/svg" width="1600" height="1460" viewBox="0 0 1600 1460">
 <title id="dataspace-services-title">Dataspace 服務架構與階段互動摘要</title>
-<desc id="dataspace-services-desc">上方為 Federation Services，中央 Participant Agent Services 的 Provider 在左、Consumer 在右，底部為 Value Creation Services。保留全部服務與 13 條摘要連線，標示加入治理、憑證申請與交付、管理操作、目錄查詢、合約協商、傳輸控制及資料流控制。藍色粗實線箭頭由 Data Source 經 Provider 與 Consumer 的 Data Plane 流向 Application。連線彙整階段互動，詳細訊息方向、順序與分支見六份流程文件中的七張循序圖。</desc>
+<desc id="dataspace-services-desc">上方為 Federation Services，中央 Participant Agent Services 的 Provider 在左、Consumer 在右，底部為 Value Creation Services。連線表示加入治理、憑證申請與交付、管理操作、目錄查詢、合約協商、傳輸控制及資料流控制。藍色粗實線表示資料由 Data Source 經雙方 Data Plane 流向 Application。各階段的訊息方向、順序與分支見對應流程文件。</desc>
 <style>text {font-family:'Noto Sans CJK TC','DejaVu Sans',sans-serif}</style><defs><marker id="control" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L11 5L0 10Z" fill="#875720"/></marker><marker id="control-start" markerWidth="11" markerHeight="10" refX="1" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M11 0L0 5L11 10Z" fill="#875720"/></marker><marker id="data" markerWidth="16" markerHeight="14" refX="14" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L16 7L0 14Z" fill="#326e8d"/></marker></defs><rect width="1600" height="1460" fill="#ffffff"/>
 <text x="200" y="47" font-size="32" fill="#263344" font-weight="700" text-anchor="start">Dataspace Services</text>
 <text x="200" y="80" font-size="18" fill="#627181" font-weight="400" text-anchor="start">服務分工與階段互動摘要</text>
@@ -69,7 +62,7 @@
 <rect x="250" y="580" width="410" height="42" rx="8" fill="#f5f8ff" stroke="#c3d2ed" stroke-width="1.6"/>
 <text x="455" y="608" font-size="18" fill="#48699c" font-weight="500" text-anchor="middle">Credential Service</text>
 <rect x="250" y="635" width="410" height="42" rx="8" fill="#f5f8ff" stroke="#c3d2ed" stroke-width="1.6"/>
-<text x="455" y="663" font-size="18" fill="#48699c" font-weight="500" text-anchor="middle">Decentralized Identifier Service</text>
+<text x="455" y="663" font-size="18" fill="#48699c" font-weight="500" text-anchor="middle">DID Service</text>
 <text x="455" y="709" font-size="16" fill="#627181" font-weight="400" text-anchor="middle">身分與憑證的細部互動見循序圖</text>
 <rect x="250" y="737" width="410" height="145" rx="10" fill="#fffaf1" stroke="#d4b994" stroke-width="1.6"/>
 <text x="455" y="817" font-size="25" fill="#875720" font-weight="700" text-anchor="middle">Control Plane</text>
@@ -85,7 +78,7 @@
 <rect x="940" y="580" width="410" height="42" rx="8" fill="#f5f8ff" stroke="#c3d2ed" stroke-width="1.6"/>
 <text x="1145" y="608" font-size="18" fill="#48699c" font-weight="500" text-anchor="middle">Credential Service</text>
 <rect x="940" y="635" width="410" height="42" rx="8" fill="#f5f8ff" stroke="#c3d2ed" stroke-width="1.6"/>
-<text x="1145" y="663" font-size="18" fill="#48699c" font-weight="500" text-anchor="middle">Decentralized Identifier Service</text>
+<text x="1145" y="663" font-size="18" fill="#48699c" font-weight="500" text-anchor="middle">DID Service</text>
 <text x="1145" y="709" font-size="16" fill="#627181" font-weight="400" text-anchor="middle">身分與憑證的細部互動見循序圖</text>
 <rect x="940" y="737" width="410" height="145" rx="10" fill="#fffaf1" stroke="#d4b994" stroke-width="1.6"/>
 <text x="1145" y="817" font-size="25" fill="#875720" font-weight="700" text-anchor="middle">Control Plane</text>
@@ -144,32 +137,6 @@
 <text x="800" y="1434" font-size="18" fill="#627181" font-weight="400" text-anchor="middle">服務為邏輯分工；連線彙整階段互動，訊息方向與先後順序見各流程文件。</text>
 </svg>
   </div>
-  <section class="details" aria-labelledby="architecture-notes-title">
-    <h1 id="architecture-notes-title">架構與規格邊界</h1>
-    <p class="hint">圖面可水平捲動；亦可<a href="dataspace-architecture.png">開啟 2 倍解析度 PNG</a>。主圖以活動名稱呈現 13 條摘要連線，詳細時序見下列流程文件。</p>
-    <p>Provider 與 Consumer 是此次資料交換的角色；雙方均具有 Security Token Service、Credential Service、Decentralized Identifier Service、Control Plane 與 Data Plane。方框表示邏輯服務，分組不構成獨立部署要求。Catalogue、Vocabulary、Observability 與 Value Creation 為選用支援服務。</p>
-    <p>棕色實線彙整 DCP、DSP 與 Data Plane Signaling 互動；棕色虛線表示加入治理與管理操作。藍色粗實線表示資料內容，由 Data Source 經 Provider 與 Consumer 的 Data Plane 流向 Application。虛線框標示組織申請者、Registration System、管理 Client、Data Source 與 Application 的治理角色或外部系統邊界。各訊息的方向與先後以循序圖為準。</p>
-    <h2>流程文件</h2>
-    <ul>
-      <li><a href="../participant-onboarding.md">加入治理與 DID 準備</a>：申請與核准、建立或沿用 DID。</li>
-      <li><a href="../credential-issuance.md">憑證申請與交付</a>：CIP 受理與後續非同步 VC 交付。</li>
-      <li><a href="../catalog-access.md">資料刊登與目錄存取</a>：資料刊登與版本探索、DCP 保護的直接目錄查詢，共兩張循序圖。</li>
-      <li><a href="../contract-negotiation.md">合約協商</a>：Request 至 FINALIZED。</li>
-      <li><a href="../transfer-pull.md">Pull 資料傳輸</a>：Consumer 請求資料並通知完成。</li>
-      <li><a href="../transfer-push.md">Push 資料傳輸</a>：Provider 主動傳送並通知完成，資料傳送可與啟動通知並行。</li>
-    </ul>
-    <p>七張循序圖直接維護在 Markdown，各圖獨立編號。垂直分區以淡米色表示 Participant／Provider／Consumer、淡綠色表示 Federation Services、淡灰色表示外部系統。實線表示請求、通知或資料內容，虛線表示回應。</p>
-    <p>本架構採 Consumer 直接查詢 Provider 的受保護目錄，經 DCP 身分及 VP／VC 驗證後由 Provider 依政策回應。Holder／Verifier 由互動決定；CIP 受理不等於完成簽發。DCP 也可用於後續 DSP 互動。DID Resolution 依 DID method 實現；STS 內部 API、治理、管理與資料來源／應用整合方式依實作。</p>
-    <p>Pull 與 Push 皆由 Consumer 提出 DSP 傳輸請求，資料內容由 Provider 流向 Consumer。Push 在提供端資料流啟動後即可傳送，可能與後續啟動通知重疊。循序圖保留 Prepared／Started 的同步回應與非同步回呼分支，呈現有限資料傳輸的成功流程；例行 ACK、錯誤、重試、暫停、終止與內部驗證不展開。</p>
-    <h2>規格基準</h2>
-    <ul>
-      <li><a href="https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/tree/2025-1-err2/specifications">DSP 2025-1-err2</a>：版本與端點探索、目錄、合約協商及傳輸流程訊息；不定義實際資料傳輸協定。</li>
-      <li><a href="https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/tree/v1.0.1/specifications">DCP 1.0.1</a>：Self-Issued ID Token、Credential Issuance Protocol（CIP）與 Verifiable Presentation Protocol（VPP）。</li>
-      <li><a href="https://github.com/eclipse-dataplane-signaling/dataplane-signaling/blob/v1.0-RC4/specifications/signaling.md">Data Plane Signaling 1.0-RC4（候選版）</a>：Control Plane 與 Data Plane 的資料流控制。</li>
-      <li><a href="https://www.w3.org/TR/2022/REC-did-core-20220719/">DID Core 1.0</a>：DID 與文件解析；<a href="https://blueprint.dssc.eu/">DSSC Blueprint</a>：服務分類參考。</li>
-    </ul>
-    <p>編輯原稿、安裝依賴、匯出與圖面檢查方式見<a href="README.md">圖片編輯說明</a>；文件入口見<a href="../../README.md">專案 README</a>。</p>
-  </section>
 </main>
 </body>
 </html>

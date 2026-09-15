@@ -1,8 +1,8 @@
-# Endpoint 設計：方案 A
+# HTTP 端點設計
 
-本文件採用「對外使用單一網域，以路徑區分服務」的方案 A，整理六份流程文件所需的 base URL、HTTP method、endpoint 與接收端用途。管理 API 採資源導向設計；DSP、DCP 與 Data Plane Signaling 保留規格指定的 method 與相對路徑。
+此端點設計以單一對外網域搭配服務路徑，區分同一參與組織的各項對外服務。以下列出各流程使用的 Base URL、HTTP method、端點路徑與接收服務。管理 API 使用資源導向設計；DSP、DCP 與 Data Plane Signaling 介面遵循各規格定義的 method 與相對路徑。
 
-範圍以流程文件中的成功路徑與必要準備為主，並補列 DCP CIP 明定必要的 Credential Offer API。本文不展開 request／response 規格，也不是完整協定實作或相容性驗證清單。
+端點清單涵蓋流程文件中的成功流程與前置作業，以及 DCP CIP 的 Credential Offer API。Request／response 訊息格式與完整協定要求，請參閱各項規格及適用 profile。
 
 ## 設計原則與規格基準
 
@@ -16,9 +16,9 @@
 ### RESTful 與協定路徑
 
 - **管理 API 自訂**：以資源及 HTTP method 表達操作，例如 `POST /applications/{applicationId}/decisions` 表示建立審核決定；加入治理與憑證簽發各自審核。
-- **協定 method 與相對路徑保留**：例如 DSP 發起協商使用 `POST /negotiations/request`，不能直接以自訂的 `POST /negotiations` 取代。DSP HTTPS binding 本身即定義為 RESTful API，仍包含 `/request`、`/start` 等動作路徑。
+- **協定介面**：DSP、DCP 與 Data Plane Signaling 的 HTTP method 與相對路徑由各規格定義。例如，DSP 發起協商使用 `POST /negotiations/request`。DSP HTTPS binding 定義的 RESTful API 包含 `/request`、`/start` 等動作路徑。
 - **Base URL 依部署設定**：網域與服務前綴可以自訂，並透過相應的探索或設定機制提供給呼叫端。DCP 明確允許 base URL 包含子網域或路徑；Signaling 要求 HTTPS，並允許額外的版本前綴。
-- **服務保持邏輯分工**：同一網域可將不同前綴路由至不同後端；Provider 與 Consumer 是互動角色，不固定寫入部署路徑。
+- **服務與部署**：同一網域可依不同服務前綴路由至不同後端。Provider 與 Consumer 是互動角色，同一參與組織可同時擔任兩者。
 
 依據：[DSP Negotiation HTTPS binding](https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/negotiation/contract.negotiation.binding.https.md)、[DCP Issuer Service Base URL](https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/credential.issuance.protocol.md#issuer-service-base-url)、[Signaling Base URL](https://github.com/eclipse-dataplane-signaling/dataplane-signaling/blob/v1.0-RC4/specifications/signaling.md#base-url)。
 
@@ -66,7 +66,7 @@ Endpoint 由「base URL ＋ 表中相對路徑」組成。本文的 base URL 均
 - Consumer 的 DSP callback base URL 使用其 `DSP` base URL，例如 `https://org-b.example/dsp/2025-1`；後續接上規格定義的協商或傳輸回呼路徑。
 - DSP 版本探索入口位於 `{PARTICIPANT}/.well-known/dspace-version`，維持**不帶版本、免驗證**，並宣告實際可用的 DSP 版本、binding 與端點。
 - DCP 的 `CS`、`ISSUER` base URL 分別透過 DID 文件中的 `CredentialService`、`IssuerService` 服務資訊提供；Signaling 的 `DP_SIG`、`CP_SIG` 透過本地設定或規格支援的註冊機制配置。
-- URL 中的 `/v1` 與 `/2025-1` 是本案路由命名；規格採用版本以上述固定版本為準，實際能力須與探索及設定資訊一致。
+- URL 中的 `/v1` 與 `/2025-1` 是部署示例的路由前綴。各服務採用的規格版本以上方規格表為準，實際能力須與探索回應及服務設定一致。
 
 依據：[DSP 版本與端點探索](https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/common/common.protocol.md)、[DSP 協商回呼](https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/negotiation/contract.negotiation.binding.https.md)、[DCP Credential Service 探索](https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/verifiable.presentation.protocol.md#credential-service-endpoint-discovery)、[DCP Issuer Service 探索](https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/credential.issuance.protocol.md#issuer-service-endpoint-discovery)、[Signaling 註冊](https://github.com/eclipse-dataplane-signaling/dataplane-signaling/blob/v1.0-RC4/specifications/signaling.md)。
 
@@ -81,7 +81,7 @@ Endpoint 由「base URL ＋ 表中相對路徑」組成。本文的 base URL 均
 | POST | `{REG}/applications` | Registration／提交加入申請 |
 | GET | `{REG}/applications/{applicationId}` | Registration／查詢申請與核准狀態 |
 | POST | `{REG}/applications/{applicationId}/decisions` | Registration／建立審核決定，若由管理介面操作 |
-| POST | `{MGMT}/dids` | DIDS／建立 DID 與必要金鑰 |
+| POST | `{MGMT}/dids` | DID Service（DIDS）／建立 DID 與必要金鑰 |
 | PUT | `{MGMT}/dids/{did}/document` | DIDS／更新、發布 DID 文件 |
 | POST | `{STS}/tokens` | STS／取得 Self-Issued ID Token，各流程共用 |
 | POST | `{ISSUER_MGMT}/requests/{requestId}/decisions` | Issuer／建立憑證申請審核決定，若採人工審核 |
@@ -103,7 +103,7 @@ Endpoint 由「base URL ＋ 表中相對路徑」組成。本文的 base URL 均
 | POST | `{CS}/offers` | Credential Service／接收 Issuer 的憑證提案 |
 | POST | `{CS}/presentations/query` | Credential Service／供 Verifier 查詢 VP |
 
-`POST /credentials` 在 Issuer 與 Credential Service 各有不同用途，透過不同 base URL 區分。`POST {CS}/offers` 雖未在六份流程的循序圖中使用，仍是 CIP 1.0.1 明定的必要端點。
+`POST /credentials` 在 Issuer 與 Credential Service 各有不同用途，透過不同 Base URL 區分。`POST {CS}/offers` 是 CIP 1.0.1 要求 Credential Service 提供的端點，用於接收 Issuer 的憑證提案。
 
 ### 3. DSP 版本探索與目錄【規格路徑】
 
@@ -162,7 +162,7 @@ Endpoint 由「base URL ＋ 表中相對路徑」組成。本文的 base URL 均
 
 Prepare、Start 採非同步處理時，才使用相應的 Prepared、Started 回呼。`/dataflows/{id}/started` 是送往 Data Plane 的通知，與送往 Control Plane 的 `/transfers/{dataFlowId}/dataflow/started` 回呼不同。
 
-路徑參數沿用規格的 `{id}` 與 `{dataFlowId}` 命名。Control Plane 回呼中的 `dataFlowId` 須對應原 Prepare 或 Start 的資料流識別碼；不假設它等同 DSP 的傳輸 PID。
+路徑參數使用 `{id}` 與 `{dataFlowId}`。Prepare 與 Start 訊息中的 `dataFlowId` 必須等於本地 Control Plane 指派的傳輸流程 ID；Control Plane 回呼 URL 中的 `dataFlowId` 必須與原 Prepare 或 Start 訊息中的值相同。
 
 ### 7. 實際資料傳輸【HTTP 自訂示例】
 
@@ -175,10 +175,10 @@ Prepare、Start 採非同步處理時，才使用相應的 Prepared、Started �
 
 此處以 `dataFlowId` 作為自訂地址的路徑參數，不表示規格要求從 signaling ID 推算資料 URL。Pull 使用 Provider 提供的 DataAddress，Push 使用 Consumer 準備的 DataAddress；Data Source 與 Application 的整合路徑則依既有系統介面決定。
 
-## 範圍與後續相容性驗證
+## 適用範圍與相容性
 
-- 本文件採用六份流程的成功路徑，並保留管理介面的實作選擇；完整 binding 中的其他查詢、協商往返、暫停、終止等端點須另行核對。
-- Credential Offer API 是本次補列的 CIP 必要端點；其他端點是否必要，仍以各協定及選定 profile 的要求為準。
+- 端點清單涵蓋六份流程文件的成功流程，管理介面為自訂設計示例。其他查詢、協商往返、暫停與終止等端點的要求，以各協定的完整 binding 為準。
+- 各端點是否必須實作，以各協定及選定 profile 的要求為準。
 - Method 與相對路徑符合規格，只能確認路由設計；完整相容性還須驗證協定訊息、狀態轉移、身分與權限，以及選定 binding、DID method、profile 的要求。
 - URL 為示例，實際部署地址須與探索資訊、DID 服務資訊及本地服務設定一致。
 

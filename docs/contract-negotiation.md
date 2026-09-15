@@ -75,11 +75,11 @@ sequenceDiagram
     Note over P,C: 合約可供後續傳輸請求引用
 ```
 
-## 必要分支與規格邊界
+## 實作注意事項
 
 - **訊息名稱**：圖中的 Request、Offer、Agreement、Agreement Verification 分別對應 `ContractRequestMessage`、`ContractOfferMessage`、`ContractAgreementMessage`、`ContractAgreementVerificationMessage`；ACCEPTED 與 FINALIZED 是 `ContractNegotiationEventMessage` 的事件類型。ACCEPTED 由 Consumer 發出，FINALIZED 由 Provider 發出。
-- **成功路徑**：圖中採一次提案即接受的路徑。DSP 也允許其他規格定義的協商路徑；往返提案、終止、錯誤及重試不在此圖展開。例行 ACK 雖省略，狀態轉移仍須依協定完成訊息接收與確認。[DSP 合約協商協定](https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/negotiation/contract.negotiation.protocol.md)
-- **身分與資格**：後續 DSP 互動也可使用 DCP 驗證；圖中省略與目錄流程類似的身分及 VP 互動。資格驗證與合約條件評估是不同責任。[DCP 與 DSP 的關係](https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/dataspace.ecosystem.md#interrelation-to-the-dataspace-protocol)
+- **成功流程**：本文涵蓋一次提案即接受的協商流程。每次狀態轉移須依 DSP 完成訊息接收與確認（ACK）。其他協商路徑，以及往返提案、終止、錯誤與重試的處理，請參閱 [DSP 合約協商協定](https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/negotiation/contract.negotiation.protocol.md)。
+- **身分與資格**：合約協商的 DSP 互動可使用 DCP 驗證身分與資格，驗證流程見「[受保護目錄查詢](catalog-access.md#受保護目錄查詢)」。資格驗證與合約條件評估是不同責任。[DCP 與 DSP 的關係](https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/dataspace.ecosystem.md#interrelation-to-the-dataspace-protocol)
 - **傳輸邊界**：合約完成後，Consumer 可在傳輸請求中引用 Agreement。合約協商本身不搬移資料；接續的 Pull／Push 均由 Consumer 發起 DSP TransferRequest，實際傳輸方式依約定的 profile。[DSP 傳輸流程](https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/transfer/transfer.process.protocol.md)
 
 ## 相關連結

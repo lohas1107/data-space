@@ -14,7 +14,7 @@
 |---|---|---|
 | Participant | 管理 Client | 取得申請用身分 token 並申請憑證。 |
 | Participant | Security Token Service（STS） | 產生本參與者的 Self-Issued ID Token。 |
-| Participant | Decentralized Identifier Service（DIDS） | 提供申請者 DID 文件中的驗證金鑰及服務資訊。 |
+| Participant | DID Service（DIDS） | 提供申請者 DID 文件中的驗證金鑰及服務資訊。 |
 | Participant | Credential Service（CS） | 驗證交付請求、接收並保存 VC。 |
 | Federation Services／Trust Services | Issuer Service | 驗證及審核申請、簽發與交付 VC，管理憑證生命週期。 |
 
@@ -76,7 +76,7 @@ sequenceDiagram
     box rgb(253,250,246) Participant
         actor Admin as 管理 Client
         participant STS as Security Token<br/>Service
-        participant DIDS as Decentralized<br/>Identifier Service
+        participant DIDS as DID Service
         participant CS as Credential Service
     end
     box rgb(244,249,245) Federation Services
@@ -97,12 +97,12 @@ sequenceDiagram
     CS-->>Issuer: 確認交付結果
 ```
 
-## 必要分支與規格邊界
+## 實作注意事項
 
-- **非同步交付**：受理回應為 `HTTP 201`，`Location` 指向申請狀態位置。後續的 `CredentialMessage` 由 Issuer Service 傳給 CS，與原申請回應分開；圖中呈現最終核准並完成交付的成功流程。
+- **非同步交付**：Issuer Service 受理申請後回應 `HTTP 201`，並以 `Location` 提供申請狀態的查詢位置。申請核准且憑證完成簽發後，Issuer Service 另行傳送 `CredentialMessage` 至 CS，交付 VC。受理回應與憑證交付是兩次獨立互動。
 - **交付身分與權限**：Issuer 使用其自身的 Self-Issued ID Token。若申請者原先提供存取 token，Issuer 必須將它放入交付用身分 token 的 `token` claim；CS 驗證身分及適用的存取權限後保存憑證。以上依 [DCP CIP](https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/credential.issuance.protocol.md)。
-- **內部與解析介面**：STS 的 token 取得 API 依實作；DID Resolution 依 DID method，圖中不固定 HTTP 解析端點。驗證、權限與儲存是邏輯分工，不額外指定 CS → STS 的內部 API。
-- 憑證格式、驗證細節與互通要求依共同採用的 [DCP profile](https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/dcp.profiles.md)。本圖不展開申請狀態輪詢、拒絕、重試、撤銷及金鑰輪替。
+- **內部與解析介面**：STS 的 token 取得 API 依實作決定。DID Resolution 依 DID method 進行，解析介面由所用方法決定。CS 負責交付請求的驗證、權限檢查與憑證保存；DCP 不規定 CS 與 STS 之間的固定內部 API。
+- 憑證格式、驗證細節與互通要求依雙方共同採用的 [DCP profile](https://github.com/eclipse-dataspace-dcp/decentralized-claims-protocol/blob/v1.0.1/specifications/dcp.profiles.md)。本文涵蓋申請受理、核准後簽發與非同步交付；申請狀態輪詢、拒絕、重試、撤銷及金鑰輪替不在本文範圍內。
 
 ## 相關連結
 

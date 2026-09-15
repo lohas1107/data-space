@@ -104,14 +104,14 @@ sequenceDiagram
     P->>PD: Completed／通知提供端完成
 ```
 
-## 必要分支與規格邊界
+## 實作注意事項
 
 - **同步／回呼**：Prepare 完成可同步回應 `HTTP 200／PREPARED`；尚在準備時回應 `HTTP 202／PREPARING`，完成後呼叫 Prepared。Start 同理使用 `HTTP 200／STARTED`，或 `HTTP 202／STARTING` 後呼叫 Started。202 只表示進行中，不能作為已完成啟動的通知。
 - **DataAddress**：Pull 使用 Provider Data Plane 啟動後提供的地址，由 Provider Control Plane 經 DSP TransferStart 交給 Consumer，再透過 Started Notification 傳入 Consumer Data Plane。地址包含資料端點資訊，也可能包含授權資訊；DCP 身分驗證不替代資料端點授權。
-- **完成方向**：Consumer Data Plane → Consumer Control Plane 的 Completed，接著 Consumer → Provider 的 DSP TransferCompletion，最後由 Provider Control Plane 通知其 Data Plane 完成。此方向依本圖採用的有限 Pull 流程；不擴充為其他傳輸模式的通則。上述訊號與地址時機依 [Data Plane Signaling 1.0-RC4](https://github.com/eclipse-dataplane-signaling/dataplane-signaling/blob/v1.0-RC4/specifications/signaling.md)。
-- **協定分工**：圖中的 DSP TransferRequest／TransferStart／TransferCompletion 對應同名加上 `Message` 的傳輸流程訊息；Prepare、Start、Prepared、Started、Started Notification、Completed 屬本地 Control Plane 與 Data Plane 的 signaling。[DSP 傳輸流程](https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/transfer/transfer.process.protocol.md)
-- **資料內容**：來源資料、回傳資料及交付內容皆用實線箭頭。實際 wire protocol 與 Data Source／Application 整合依實作及 profile；DSP 不定義實際資料傳輸協定。[DSP 範圍](https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/common/scope.md)
-- 本圖呈現有限資料傳輸的成功流程，省略例行 ACK、內部驗證、錯誤、重試、暫停與終止；非有限傳輸不套用此完成順序。
+- **完成方向**：在此有限 Pull 流程中，Consumer Data Plane 先以 Completed 通知本地 Control Plane，再由 Consumer Control Plane 傳送 DSP TransferCompletion 至 Provider，最後由 Provider Control Plane 通知其 Data Plane 完成。此順序適用於本文的有限 Pull 流程；其他傳輸模式須依對應規格處理。[Data Plane Signaling 1.0-RC4](https://github.com/eclipse-dataplane-signaling/dataplane-signaling/blob/v1.0-RC4/specifications/signaling.md)
+- **協定分工**：`TransferRequestMessage`、`TransferStartMessage` 與 `TransferCompletionMessage` 是雙方 Control Plane 之間的 DSP 訊息。Prepare、Start、Prepared、Started、Started Notification 與 Completed 是本地 Control Plane 與 Data Plane 之間的 Data Plane Signaling 互動。[DSP 傳輸流程](https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/transfer/transfer.process.protocol.md)
+- **資料內容**：實際 wire protocol 與 Data Source／Application 整合依實作及 profile 決定；DSP 不定義實際資料傳輸協定。[DSP 範圍](https://github.com/eclipse-dataspace-protocol-base/DataspaceProtocol/blob/2025-1-err2/specifications/common/scope.md)
+- **適用範圍**：本文涵蓋有限資料傳輸的成功流程；例行 ACK、內部驗證、錯誤處理、重試、暫停與終止不在本文範圍內。非有限傳輸不適用上述完成順序。
 
 ## 相關連結
 
