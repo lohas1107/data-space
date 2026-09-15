@@ -1,7 +1,7 @@
 """Export the editable SVG in dataspace-services.html as the README PNG.
 
 Requires CairoSVG==2.9.1, libcairo and the Noto Sans CJK TC font.
-Run from any directory: python docs/images/render_architecture.py
+Run from the project root: python docs/images/render_architecture.py
 """
 
 import argparse
